@@ -34,10 +34,30 @@ server.post('/posts', (req, res) => {
   console.log(req.body)
   posts.push(req.body)
   res.json(req.body.id)
-  // if id doesn't belong to a post => ERROR
+})
 
+server.put('/posts', (req, res) => {
+  // if id doesn't belong to a post => ERROR
   // update the posts object and respond with the updated posts object with res.json({posts})
-    // posts.push({})
+  // posts.push({})
+  // console.log(Object.values(req.body))
+  if (Object.values(req.body).includes('')) {
+    res.status(STATUS_USER_ERROR).json({ error: 'Must provide valid id, title, and contents'});
+    return;
+  }
+  console.log(posts.filter(p => req.body.id === p.id).length)
+  if (!posts.filter(p => req.body.id === p.id).length) {
+    res.status(STATUS_USER_ERROR).json({ error: `The post ID ${req.body.id} does not exist`})
+  }
+  else {
+    // modify the given id updating its title and contents respond with updated post obj with a
+    // res.json
+    updatedPosts = posts.map(p => req.body.id === p.id ? req.body : p);
+    console.log(updatedPosts);
+    res.json(updatedPosts.find(p => req.body.id === p.id));
+    // res.json()
+  }
+  // res.send('PUT REQUEST')
 })
 
 module.exports = { posts, server };
