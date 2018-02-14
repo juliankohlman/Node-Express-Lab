@@ -5,7 +5,7 @@ const STATUS_USER_ERROR = 422;
 
 // This array of posts persists in memory across requests. Feel free
 // to change this to a let binding if you need to reassign it.
-const posts = [];
+let posts = [];
 let postId = 0
 const server = express();
 // to enable parsing of json bodies for post requests
@@ -52,12 +52,21 @@ server.put('/posts', (req, res) => {
   else {
     // modify the given id updating its title and contents respond with updated post obj with a
     // res.json
-    updatedPosts = posts.map(p => req.body.id === p.id ? req.body : p);
-    console.log(updatedPosts);
-    res.json(updatedPosts.find(p => req.body.id === p.id));
+    posts = posts.map(p => req.body.id === p.id ? req.body : p);
+    console.log(posts);
+    res.json(posts.find(p => req.body.id === p.id));
     // res.json()
   }
   // res.send('PUT REQUEST')
+})
+
+server.delete('/posts', (req, res) => {
+  if (posts.find(p => req.body.id === p.id)) {
+    posts = posts.filter(p => req.body.id !== p.id)
+    res.json({ success: true });
+  } else {
+    res.status(STATUS_USER_ERROR).json({ error: `Cannot delete ID # ${req.body.id} because it does not exist.`})
+  }
 })
 
 module.exports = { posts, server };
